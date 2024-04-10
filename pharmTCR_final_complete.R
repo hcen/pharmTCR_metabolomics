@@ -57,11 +57,19 @@ xcms.30 <- xcms.new %>%
 xcms.20 <- xcms.new %>%
   mutate(final.label = ifelse(ppm<=20 , `HMDB most confident ID_HC`,NA)) %>%
   relocate(final.label, .before='first.label')
-# 86 to 43 (ppm 20) or 52 (ppm 30)
+# final.label column are the compound with ppm<=20
+
 df <- xcms.30$final.label[!xcms.30$final.label %in% xcms.20$final.label]
 View(xcms.30[xcms.30$final.label %in% df,]) 
 # between ppm30 and ppm20, none of the additional compounds are in bar graph or volcano (q<0.05), so used ppm20
 View(xcms.20)
+
+sum(!is.na(xcms.30$final.label)) # 52 label
+
+sum(!is.na(xcms.20$final.label)) # 42 label
+
+sum(!is.na(xcms.20$label))
+
 write_xlsx(xcms.20,"output/xcms_20ppm.xlsx")
 xcms.20 <- read_excel("input/xcms_20ppm.xlsx",sheet = 1) 
 
@@ -70,6 +78,8 @@ xcms.20 <- read_excel("input/xcms_20ppm.xlsx",sheet = 1)
 m.anno <- xcms.20 %>% filter(pvalue < 0.05) # 114
 dim(m.anno)
 colnames(m.anno)
+View(m.anno)
+sum(!is.na(m.anno$final.label)) # 42 label
 
 m <- as.matrix(as.data.frame(lapply(m.anno[,36:73], as.numeric),check.names=F))
 
